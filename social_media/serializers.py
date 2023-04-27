@@ -1,19 +1,8 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from social_media.models import Post, Like, Comment, Profile
+from social_media.models import Post, Like, Comment
 from user.serializers import UserSerializer
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    is_staff = serializers.CharField(source="user.is_staff", read_only=True)
-    user = serializers.CharField(source="user.id", read_only=True)
-    email = serializers.EmailField(source="user.email", read_only=True)
-    followers = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
-    posts = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
-
-    class Meta:
-        model = Profile
-        fields = ("id", "user", "email", "bio", "avatar", "followers", "posts", "is_staff")
 
 
 class LikeSerializer(serializers.ModelSerializer):
