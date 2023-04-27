@@ -2,6 +2,7 @@ from django.contrib.auth.models import (
     AbstractUser,
     BaseUserManager,
 )
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext as _
 
@@ -48,3 +49,13 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
+    bio = models.TextField(blank=True)
+    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="profiles", blank=True)
+    image = models.ImageField(null=True, upload_to="post_images/")
+
+    def __str__(self) -> str:
+        return self.bio
