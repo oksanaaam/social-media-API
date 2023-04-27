@@ -1,13 +1,9 @@
 
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 
 from social_media.models import Post, Like, Comment
 from social_media.permissions import IsAdminOrIfAuthenticated
-from social_media.serializers import PostSerializer, LikeSerializer, CommentSerializer, PostListSerializer, \
-    PostDetailSerializer, PostImageSerializer
-from user.serializers import UserSerializer
+from social_media.serializers import PostSerializer, LikeSerializer, CommentSerializer
 
 
 class PostViewSet(viewsets.ModelViewSet):
