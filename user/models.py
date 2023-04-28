@@ -45,7 +45,7 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-def profile_avatar_file_path(user, filename):
+def profile_picture_file_path(user, filename):
     _, extension = os.path.splitext(filename)
 
     filename = f"{slugify(user.id)}-{uuid.uuid4()}{extension}"
@@ -66,7 +66,7 @@ class User(AbstractUser):
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     bio = models.TextField(blank=True)
-    avatar = models.ImageField(null=True, upload_to=profile_avatar_file_path)
+    avatar = models.ImageField(null=True, upload_to=profile_picture_file_path)
     following = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_follows")
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="profiles", blank=True)
 
