@@ -1,22 +1,51 @@
-
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets
 
-from social_media.models import Post, Like, Comment
-from social_media.permissions import IsAdminOrIfAuthenticated
-from social_media.serializers import PostSerializer, LikeSerializer, CommentSerializer
+from social_media.models import Post
+from social_media.permissions import IsAdminOrIfAuthenticated, IsTheUserOrReadOnly
+from social_media.serializers import PostSerializer, PostListSerializer
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (IsAdminOrIfAuthenticated,)
+    permission_classes = (IsAdminOrIfAuthenticated, IsTheUserOrReadOnly)
 
+    @staticmethod
+    def _params_to_ints(qs):
+        """Converts a list of string IDs to a list of integers"""
+        return [int(str_id) for str_id in qs.split(",")]
 
-class LikeViewSet(viewsets.ModelViewSet):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
+    def get_queryset(self):
+        following_list = self.request.user.profile.following.all()
 
+        queryset = self.queryset.filter(
+            user__in=list(following_list) + [self.request.user.id]
+        )
 
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
+        content = self.request.query_params.get("content")
+
+        if content:
+            queryset = queryset.filter(content__icontains=content)
+
+        return queryset.distinct()
+
+    def get_serializer_class(self):
+        if self.action in ["list", "retrieve"]:
+            return PostListSerializer
+        return PostSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "content",
+                type=str,
+                description="Filter by case insensitive content (ex. ?content=sport)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
