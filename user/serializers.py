@@ -66,19 +66,13 @@ class AuthTokenSerializer(serializers.Serializer):
         return attrs
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ("id", "user", "bio")
-
-
 class ProfileListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ("id", "user", "bio", "followers")
 
 
-class ProfileImageSerializer(serializers.ModelSerializer):
+class ProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ("id", "image")
+        fields = ("id", "user", "bio", "following", "followers")

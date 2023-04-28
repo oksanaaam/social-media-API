@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -8,6 +9,9 @@ from rest_framework_simplejwt.views import (
 from user.views import CreateUserView, ManageUserView, ProfileViewSet
 
 app_name = "user"
+
+router = routers.DefaultRouter()
+router.register("profiles", ProfileViewSet)
 
 
 urlpatterns = [

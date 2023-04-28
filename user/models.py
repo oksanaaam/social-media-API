@@ -1,9 +1,13 @@
+import os
+import uuid
+
 from django.contrib.auth.models import (
     AbstractUser,
     BaseUserManager,
 )
 from django.conf import settings
 from django.db import models
+from django.utils.text import slugify
 from django.utils.translation import gettext as _
 
 
@@ -41,6 +45,14 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
+def profile_avatar_file_path(user, filename):
+    _, extension = os.path.splitext(filename)
+
+    filename = f"{slugify(user.id)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads", "avatar", filename)
+
+
 class User(AbstractUser):
     username = None
     email = models.EmailField(_("email address"), unique=True)
@@ -54,8 +66,9 @@ class User(AbstractUser):
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     bio = models.TextField(blank=True)
+    avatar = models.ImageField(null=True, upload_to=profile_avatar_file_path)
+    following = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_follows")
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="profiles", blank=True)
-    image = models.ImageField(null=True, upload_to="post_images/")
 
     def __str__(self) -> str:
         return self.bio
