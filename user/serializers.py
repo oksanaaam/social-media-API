@@ -70,9 +70,11 @@ class ProfileListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ("id", "user", "bio", "followers")
+        read_only_fields = ("id", "user", "followers")
 
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ("id", "user", "bio", "following", "followers")
+        fields = ("id", "user", "bio", "avatar", "following", "followers")
+        read_only_fields = ("id", "user", "followers")

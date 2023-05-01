@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from social_media.models import Post
-from user.serializers import UserSerializer
 
 
 class PostSerializer(serializers.ModelSerializer):

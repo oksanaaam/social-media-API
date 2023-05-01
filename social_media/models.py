@@ -1,7 +1,17 @@
+import os
+import uuid
+
 from django.conf import settings
 from django.db import models
+from django.utils.text import slugify
 
-from user.models import profile_picture_file_path
+
+def profile_picture_file_path(user, filename):
+    _, extension = os.path.splitext(filename)
+
+    filename = f"{slugify(user.id)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/posts", filename)
 
 
 class Post(models.Model):

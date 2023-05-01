@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from user.models import Profile
+from user.permissions import IsAuthenticatedOrReadOnly
 from user.serializers import UserSerializer, ProfileListSerializer, ProfileDetailSerializer
 
 
@@ -23,17 +24,18 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
+
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileListSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
     def get_queryset(self):
         email = self.request.query_params.get("email")
         queryset = self.queryset
         if email:
             queryset = queryset.filter(user__email__icontains=email)
-        return queryset.select_related("user").prefetch_related("followers").distinct()
+        return queryset.distinct()
 
     def get_serializer_class(self):
         if self.action == "list":
