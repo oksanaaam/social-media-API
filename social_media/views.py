@@ -2,14 +2,14 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets
 
 from social_media.models import Post
-from social_media.permissions import IsAdminOrIfAuthenticated, IsTheUserOrReadOnly
+from social_media.permissions import IsAuthenticatedOrReadOnly
 from social_media.serializers import PostSerializer, PostListSerializer
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (IsAdminOrIfAuthenticated, IsTheUserOrReadOnly)
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
     @staticmethod
     def _params_to_ints(qs):
